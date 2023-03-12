@@ -1,13 +1,10 @@
 package com.example.chat_app.ui.register
 
-import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import androidx.databinding.Observable
 import androidx.databinding.ObservableField
-import androidx.lifecycle.ViewModel
+import com.example.chat_app.BaseViewModel
+import com.google.firebase.auth.FirebaseAuth
 
-class RegisterViewModel : ViewModel() {
+class RegisterViewModel : BaseViewModel<Navigator>() {
     var userName = ObservableField<String>()
     var errorUserName = ObservableField<String?>()
     var email = ObservableField<String>()
@@ -19,11 +16,24 @@ class RegisterViewModel : ViewModel() {
     var confirmPassword = ObservableField<String>()
     var errorConfirmPassword = ObservableField<String?>()
 
+
+    var auth = FirebaseAuth.getInstance()
+
     fun register() {
         if (!validateForm())
             return;
+        navigator?.showLoading("Loading....")
+        auth.createUserWithEmailAndPassword(email.get()!!, password.get()!!)
+            .addOnCompleteListener {
+                navigator?.hideDialoge()
+                if (it.isSuccessful) {
+                    navigator?.showMessage("successful registration")
 
 
+                } else {
+                    navigator?.showMessage(it.exception?.localizedMessage ?: "")
+                }
+            }
     }
 
     fun validateForm(): Boolean {
@@ -77,7 +87,6 @@ class RegisterViewModel : ViewModel() {
 
         return isValid
     }
-
 
 
 }

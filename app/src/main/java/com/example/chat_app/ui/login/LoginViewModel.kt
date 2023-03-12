@@ -1,22 +1,32 @@
 package com.example.chat_app.ui.login
 
-
-import android.content.Intent
-import android.view.View
 import androidx.databinding.ObservableField
-import androidx.lifecycle.ViewModel
-import com.example.chat_app.ui.register.RegisterActivity
+import com.example.chat_app.BaseViewModel
+import com.google.firebase.auth.FirebaseAuth
 
-class LoginViewModel : ViewModel() {
-   
+class LoginViewModel : BaseViewModel<LoginNavigator>() {
     var email = ObservableField<String>()
     var errorEmail = ObservableField<String?>()
     var password = ObservableField<String>()
     var errorPassword = ObservableField<String?>()
+    var auth = FirebaseAuth.getInstance()
 
     fun register() {
         if (!validateForm())
             return;
+        navigator?.showLoading("Loading....")
+        auth.signInWithEmailAndPassword(
+            email.get()!!,
+            password.get()!!
+        ).addOnCompleteListener {
+            navigator?.hideDialoge()
+            if (it.isSuccessful) {
+                navigator?.goToHome()
+                return@addOnCompleteListener
+            }
+            navigator?.showMessage(it.exception?.localizedMessage ?: "")
+
+        }
 
 
     }
@@ -42,18 +52,11 @@ class LoginViewModel : ViewModel() {
             //hide error
             errorPassword.set(null)
         }
-
-
         return isValid
     }
 
-    fun openRegister(view: View)
-    {
-        var intent=Intent(view.context,RegisterActivity::class.java)
-        view.context.startActivity(intent)
-
-
+    fun goToRegister() {
+        navigator?.goToRegister()
     }
-
 
 }

@@ -1,26 +1,26 @@
 package com.example.chat_app.ui.register
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.method.HideReturnsTransformationMethod
-import android.text.method.PasswordTransformationMethod
-import android.widget.EditText
-import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.chat_app.BaseActivity
 import com.example.chat_app.R
 import com.example.chat_app.databinding.ActivityRegisterBinding
 
-class RegisterActivity : BaseActivity() {
-    lateinit var viewBinding: ActivityRegisterBinding
-    lateinit var viewModel: RegisterViewModel
+class RegisterActivity : BaseActivity<ActivityRegisterBinding
+        , RegisterViewModel>(), Navigator {
+    override fun getLayoutId(): Int {
+        return R.layout.activity_register
+    }
+
+    override fun getViewModelId(): RegisterViewModel {
+        return ViewModelProvider(this)[RegisterViewModel::class.java]
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewBinding = DataBindingUtil.setContentView(this, R.layout.activity_register)
-        viewModel = ViewModelProvider(this)[RegisterViewModel::class.java]
         viewBinding.vm = viewModel
+        viewModel.navigator = this
+
         showpass(
             viewBinding.included.password,
             viewBinding.included.icon,
@@ -37,16 +37,18 @@ class RegisterActivity : BaseActivity() {
             viewBinding.included.icon2r2,
             viewBinding.included.iconre1
         )
-        viewBinding.back.setOnClickListener{
+        viewBinding.back.setOnClickListener {
             finish()
         }
+
 
     }
 
 
-
-
 }
+
+
+
 
 
 
